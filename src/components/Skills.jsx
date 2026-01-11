@@ -1,9 +1,17 @@
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 
 const Skills = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
+  const [centerIndex, setCenterIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCenterIndex(prev => (prev + 1) % 7);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   const categories = [
     {
@@ -88,19 +96,64 @@ const Skills = () => {
         </motion.div>
 
         <motion.div 
-          className="mt-16 flex flex-col md:flex-row items-center justify-between p-6 border border-muted border-opacity-20 bg-primary bg-opacity-40"
+          className="mt-16 p-8 border border-muted border-opacity-20 bg-primary bg-opacity-40"
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <div className="mb-6 md:mb-0">
-            <h3 className="text-xl font-medium mb-2">Ready to collaborate?</h3>
-            <p className="text-muted">Let's discuss how my skills can help your project.</p>
+          <div className="flex items-center justify-center h-64 overflow-hidden relative">
+            <motion.div 
+              className="flex gap-8 items-center"
+              animate={{ x: [0, -3000] }}
+              transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
+            >
+              {[
+                { src: '/github-removebg-preview.png', alt: 'GitHub' },
+                { src: '/mongodb-removebg-preview.png', alt: 'MongoDB' },
+                { src: '/node-js-logo-png-transparent-png-removebg-preview.png', alt: 'Node.js' },
+                { src: '/postgre_sql-removebg-preview.png', alt: 'PostgreSQL' },
+                { src: '/python_img-removebg-preview.png', alt: 'Python' },
+                { src: '/aws-removebg-preview.png', alt: 'AWS' },
+                { src: '/vite_+react-removebg-preview.png', alt: 'Vite + React' }
+              ].concat([
+                { src: '/github-removebg-preview.png', alt: 'GitHub' },
+                { src: '/mongodb-removebg-preview.png', alt: 'MongoDB' },
+                { src: '/node-js-logo-png-transparent-png-removebg-preview.png', alt: 'Node.js' },
+                { src: '/postgre_sql-removebg-preview.png', alt: 'PostgreSQL' },
+                { src: '/python_img-removebg-preview.png', alt: 'Python' },
+                { src: '/aws-removebg-preview.png', alt: 'AWS' },
+                { src: '/vite_+react-removebg-preview.png', alt: 'Vite + React' }
+              ]).concat([
+                { src: '/github-removebg-preview.png', alt: 'GitHub' },
+                { src: '/mongodb-removebg-preview.png', alt: 'MongoDB' },
+                { src: '/node-js-logo-png-transparent-png-removebg-preview.png', alt: 'Node.js' },
+                { src: '/postgre_sql-removebg-preview.png', alt: 'PostgreSQL' },
+                { src: '/python_img-removebg-preview.png', alt: 'Python' },
+                { src: '/aws-removebg-preview.png', alt: 'AWS' },
+                { src: '/vite_+react-removebg-preview.png', alt: 'Vite + React' }
+              ]).map((logo, index) => {
+                const isCenter = index % 7 === centerIndex;
+                return (
+                  <motion.div
+                    key={index}
+                    className="flex items-center justify-center h-32 w-32 bg-secondary bg-opacity-50 rounded-lg flex-shrink-0"
+                    animate={{
+                      scale: isCenter ? 1.8 : 1,
+                      rotate: isCenter ? 360 : 0,
+                    }}
+                    transition={{ type: 'spring', stiffness: 300, duration: 0.5, repeat: Infinity }}
+                  >
+                    <img 
+                      src={logo.src} 
+                      alt={logo.alt}
+                      className="h-24 w-24 object-contain"
+                      style={{ mixBlendMode: 'screen' }}
+                    />
+                  </motion.div>
+                );
+              })}
+            </motion.div>
           </div>
-          <a href="#contact" className="btn btn-primary whitespace-nowrap">
-            Get in Touch
-            <span className="ml-2">→</span>
-          </a>
         </motion.div>
       </div>
     </section>

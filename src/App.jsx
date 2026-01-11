@@ -6,10 +6,12 @@ import Header from './components/Header.jsx';
 import Hero from './components/Hero.jsx';
 import Projects from './components/Projects.jsx';
 import Skills from './components/Skills.jsx';
+import Experience from './components/Experience.jsx';
 import Education from './components/Education.jsx';
 import Contact from './components/Contact.jsx';
 import Footer from './components/Footer.jsx';
 import Loader from './components/Loader.jsx';
+
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -44,6 +46,7 @@ function App() {
                     <Hero />
                     <Projects />
                     <Skills />
+                    <Experience />
                     <Education />
                     <Contact />
                   </main>

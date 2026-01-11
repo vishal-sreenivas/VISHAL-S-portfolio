@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
+import { TimelineItemReveal, SoftScrollReveal } from '../utils/scrollAnimations.jsx';
 
 const Education = () => {
   const ref = useRef(null);
@@ -84,16 +85,18 @@ const Education = () => {
 
             <div className="space-y-8">
               {education.map((edu, i) => (
-                <motion.div
+                <TimelineItemReveal
                   key={i}
+                  index={i}
+                  staggerDelay={0.15}
+                  duration={0.7}
                   className="border-l-2 border-muted border-opacity-30 pl-6 relative"
-                  variants={itemVariants}
                 >
                   <div className="absolute w-3 h-3 bg-primary border border-light rounded-full -left-[7px] top-1"></div>
                   <h4 className="text-lg font-medium mb-1">{edu.institution}</h4>
                   <p className="text-muted mb-1">{edu.degree} {edu.field && `- ${edu.field}`}</p>
                   {edu.period && <p className="text-sm font-mono text-light opacity-70">{edu.period}</p>}
-                </motion.div>
+                </TimelineItemReveal>
               ))}
             </div>
           </motion.div>

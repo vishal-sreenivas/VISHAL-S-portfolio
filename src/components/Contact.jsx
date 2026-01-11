@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import emailjs from '@emailjs/browser';
+import { SoftCTA, TextFadeSlide, SoftScrollReveal } from '../utils/scrollAnimations.jsx';
 
 const Contact = () => {
   const ref = useRef(null);
@@ -36,46 +36,41 @@ const Contact = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus({ submitting: true, submitted: false, error: null });
 
-    // Format the current date and time in UTC as YYYY-MM-DD HH:MM:SS
-    const now = new Date();
-    const formattedDate = now.toISOString().replace('T', ' ').substring(0, 19);
+    try {
+      const response = await fetch('https://formspree.io/f/mqeezvye', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          _subject: `New Portfolio Contact from ${formData.name}`,
+          _replyto: formData.email,
+          _next: window.location.href
+        })
+      });
 
-    // EmailJS configuration
-    const serviceId = import.meta.env.VITE_SERVICE_ID;
-    const templateId = import.meta.env.VITE_TEMPLATE_ID;
-    const publicKey = import.meta.env.VITE_PUBLIC_KEY;
-
-    // Initialize EmailJS with your public key
-    emailjs.init(publicKey);
-
-    // Prepare form data for EmailJS
-    const templateParams = {
-      from_name: formData.name,
-      from_email: formData.email,
-      message: formData.message,
-      to_email: 'vishal.s.offical@gmail.com',
-      date_time: formattedDate,
-      user_login: 'vishal-sreenivas'
-    };
-
-    emailjs.send(serviceId, templateId, templateParams)
-      .then((response) => {
-        console.log('Email sent successfully:', response);
+      if (response.ok) {
+        console.log('Email sent successfully');
         setStatus({ submitting: false, submitted: true, error: null });
         setFormData({ name: '', email: '', message: '' });
 
         setTimeout(() => {
           setStatus(prev => ({ ...prev, submitted: false }));
         }, 5000);
-      })
-      .catch((error) => {
-        console.error('Failed to send email:', error);
-        setStatus({ submitting: false, submitted: false, error: 'Failed to send message. Please try again.' });
-      });
+      } else {
+        throw new Error('Failed to send message');
+      }
+    } catch (error) {
+      console.error('Failed to send email:', error);
+      setStatus({ submitting: false, submitted: false, error: 'Failed to send message. Please try again.' });
+    }
   };
 
   const containerVariants = {
@@ -94,25 +89,28 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="section-padding bg-secondary">
+    <section id="contact" className="section-padding bg-secondary relative overflow-hidden">
+      {/* Subtle parallax background */}
+      <motion.div
+        className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-blue-500 opacity-10 rounded-full blur-3xl -z-10"
+        animate={{ y: [0, 20, 0] }}
+        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      
       <div className="container-custom" ref={ref}>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="mb-12"
-        >
+        <TextFadeSlide direction="up" duration={0.8} className="mb-12">
           <h4 className="font-mono text-sm text-muted mb-2">GET IN TOUCH</h4>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Contact Me</h2>
           <div className="w-16 h-[2px] bg-light opacity-50"></div>
-        </motion.div>
+        </TextFadeSlide>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-          >
+          <SoftScrollReveal direction="left" duration={0.8} delay={0.2}>
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate={isInView ? "visible" : "hidden"}
+            >
             <motion.h3
               variants={itemVariants}
               className="text-xl font-medium mb-6"
@@ -198,13 +196,9 @@ const Contact = () => {
               </motion.div>
             </motion.div>
           </motion.div>
+          </SoftScrollReveal>
 
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
+          <SoftCTA duration={0.8} delay={0.3} scaleAmount={0.05} parallaxAmount={20}>
             <form ref={formRef} onSubmit={handleSubmit} className="bg-primary bg-opacity-40 border border-muted border-opacity-10 p-6">
               <h3 className="text-xl font-medium mb-6">Send a Message</h3>
 
@@ -267,7 +261,7 @@ const Contact = () => {
                 </div>
               )}
             </form>
-          </motion.div>
+          </SoftCTA>
         </div>
       </div>
     </section>

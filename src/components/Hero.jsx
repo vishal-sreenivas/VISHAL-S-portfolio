@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { motion, useInView, useScroll, useTransform } from 'framer-motion';
+import { ScrollReveal, ParallaxBackground, FloatingElement, TextFadeSlide, useScrollParallax } from '../utils/scrollAnimations.jsx';
 import Avatar from './Avatar'; // Added import
 
 const DottedText = ({ text }) => {
@@ -12,8 +13,20 @@ const DottedText = ({ text }) => {
   );
 };
 
+// Avatar with scroll parallax effect
+const AvatarWithParallax = () => {
+  const { ref, style } = useScrollParallax(80, 0, 0);
+  return (
+    <motion.div ref={ref} style={style}>
+      <Avatar />
+    </motion.div>
+  );
+};
+
 const Hero = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -56,7 +69,7 @@ const Hero = () => {
 
   return (
     <section id="home" className="h-screen flex items-center relative overflow-hidden">
-      {/* Background elements */}
+      {/* Background elements with parallax */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <motion.div
           className="absolute left-1/3 top-1/4 w-72 h-72 rounded-full bg-gradient-to-tr from-[#202020] to-transparent opacity-30 blur-xl"
@@ -70,6 +83,7 @@ const Hero = () => {
             repeat: Infinity,
             repeatType: "reverse"
           }}
+          style={{ willChange: 'transform' }}
         />
         <motion.div
           className="absolute right-1/4 bottom-1/3 w-64 h-64 rounded-full bg-gradient-to-bl from-[#252525] to-transparent opacity-20 blur-xl"
@@ -83,6 +97,7 @@ const Hero = () => {
             repeat: Infinity,
             repeatType: "reverse"
           }}
+          style={{ willChange: 'transform' }}
         />
       </div>
 
@@ -92,11 +107,11 @@ const Hero = () => {
         <div className="font-mono text-xs text-muted">~Vishal S</div>
       </div>
 
-      <div className="container-custom"> {/* Main container for hero content */}
+      <div className="container-custom" ref={ref}> {/* Main container for hero content */}
 
-        {/* Avatar Element - Added Here */}
+        {/* Avatar Element with parallax */}
         <div className="hidden md:block absolute top-1/2 right-20 lg:right-32 transform -translate-y-1/2 z-10">
-          <Avatar />
+          <AvatarWithParallax />
         </div>
 
         <motion.div
@@ -105,36 +120,29 @@ const Hero = () => {
           initial="hidden"
           animate="visible"
         >
-          <motion.div variants={childVariants} className="mb-4">
+          <TextFadeSlide direction="up" duration={0.7} delay={0.2} className="mb-4">
             <div className="inline-block w-12 h-[1px] bg-muted mr-4 align-middle"></div>
             <span className="text-muted text-sm font-mono">PORTFOLIO </span>
-          </motion.div>
+          </TextFadeSlide>
 
           {/* Nothing-inspired headline with dotted/pixel effect */}
-          <motion.h1
-            variants={childVariants}
-            className="text-4xl md:text-6xl font-bold mb-8"
-          >
-            <div className="mb-2 font-mono text-sm tracking-wider text-muted">HELLO, I'M</div>
-            <div className="nothing-headline font-mono tracking-wide">
-              <DottedText text="Vishal S" />
-            </div>
-            <div className="mt-3 text-gradient">Tech Enthusiast & Developer</div>
-          </motion.h1>
+          <TextFadeSlide direction="up" duration={0.8} delay={0.4} className="mb-8">
+            <motion.h1 className="text-4xl md:text-6xl font-bold">
+              <div className="mb-2 font-mono text-sm tracking-wider text-muted">HELLO, I'M</div>
+              <div className="nothing-headline font-mono tracking-wide">
+                <DottedText text="Vishal S" />
+              </div>
+              <div className="mt-3 text-gradient">Tech Enthusiast & Developer</div>
+            </motion.h1>
+          </TextFadeSlide>
 
-          <motion.p
-            variants={childVariants}
-            className="text-muted text-lg md:text-xl mb-10 max-w-xl"
-          >
+          <TextFadeSlide direction="up" duration={0.8} delay={0.6} className="text-muted text-lg md:text-xl mb-10 max-w-xl">
             Solving real-world problems through innovative solutions.
             Eager to apply technical expertise and creativity in dynamic environments.
-          </motion.p>
+          </TextFadeSlide>
 
           {/* Social media and resume section */}
-          <motion.div
-            variants={childVariants}
-            className="flex flex-wrap gap-6 mb-12"
-          >
+          <TextFadeSlide direction="up" duration={0.8} delay={0.8} className="flex flex-wrap gap-6 mb-12">
             <a href="https://github.com/vishal-sreenivas" target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-2 text-sm text-muted hover:text-light transition-colors">
               <svg className="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
@@ -150,12 +158,9 @@ const Hero = () => {
               </svg>
               LINKEDIN
             </a>
-          </motion.div>
+          </TextFadeSlide>
 
-          <motion.div
-            variants={childVariants}
-            className="flex flex-wrap gap-5"
-          >
+          <TextFadeSlide direction="up" duration={0.8} delay={1.0} className="flex flex-wrap gap-5">
             <a href="#projects" className="nothing-btn group">
               VIEW PROJECTS
               <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,13 +168,13 @@ const Hero = () => {
               </svg>
             </a>
 
-            <a href="/VISHAL_S___Junior__developer.pdf" target="_blank" rel="noopener noreferrer" className="nothing-btn">
+            <a href="/Vishal S.pdf" target="_blank" rel="noopener noreferrer" className="nothing-btn">
               RESUME
               <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
               </svg>
             </a>
-          </motion.div>
+          </TextFadeSlide>
         </motion.div>
       </div>
 

@@ -1,8 +1,11 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
+import { FloatingCardReveal, TextFadeSlide } from '../utils/scrollAnimations.jsx';
 
 const Projects = () => {
   const [activeProject, setActiveProject] = useState(0);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.2 });
 
   const projects = [
     {
@@ -131,17 +134,11 @@ const Projects = () => {
   return (
     <section id="projects" className="section-padding bg-primary">
       <div className="container-custom">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-8 md:mb-12"
-        >
+        <TextFadeSlide direction="up" duration={0.8} className="mb-8 md:mb-12">
           <h4 className="font-mono text-sm text-muted mb-2">PORTFOLIO</h4>
           <h2 className="text-2xl md:text-4xl font-bold mb-4">Featured Projects</h2>
           <div className="w-16 h-[2px] bg-light opacity-50"></div>
-        </motion.div>
+        </TextFadeSlide>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8">
           {/* Project selector - mobile version */}
@@ -218,12 +215,11 @@ const Projects = () => {
           </motion.div>
 
           {/* Project details */}
-          <motion.div 
+          <FloatingCardReveal 
             className="col-span-1 md:col-span-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            key={activeProject}
-            transition={{ duration: 0.5 }}
+            offset={90}
+            rotation={8}
+            startOffset={300}
           >
             <motion.div 
               className="bg-secondary bg-opacity-20 p-4 md:p-6 border border-muted border-opacity-10"
@@ -278,7 +274,7 @@ const Projects = () => {
                 </div>
               )}
             </motion.div>
-          </motion.div>
+          </FloatingCardReveal>
         </div>
       </div>
     </section>
